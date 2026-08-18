@@ -6,15 +6,15 @@
 
 Finding average:
 ```
-SELECT AVG(quantity * price) from transactions where txn_type = 'BUY'
+SELECT AVG(price) from transactions where txn_type = 'BUY'
 ```
 
 BUY > AVG BUY:
 ```
-select account_id, quantity * price as AMOUNT
+select account_id,  price as AMOUNT
 from transactions
 where txn_type = 'BUY'
-and quantity * price > (SELECT AVG(quantity * price) from transactions where txn_type = 'BUY');
+and  price > (SELECT AVG(price) from transactions where txn_type = 'BUY');
 ```
 
 2. Correlated subquery: every account alongside the date of its most recent transaction.
