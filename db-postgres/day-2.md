@@ -58,3 +58,11 @@ where TOTAL > (
 Finish early: try task 3 again using a window function instead of a second aggregate pass.
 
 ```
+SELECT * FROM (
+	select account_id, sum(quantity * price) as total,
+	avg(sum(quantity * price)) OVER() as avg_total
+	from transactions
+	where txn_type = 'BUY'
+	group by account_id
+) where total > avg_total
+```
