@@ -6,8 +6,15 @@ In Windows CMD,
 
 ```
 psql -U postgres -h localhost
+```
+
+Enter Password when prompted:
+
+```
 n3u3d4!
 ```
+
+Password varies between users and devices.
 
 Create and Switch to DB
 
@@ -16,9 +23,9 @@ CREATE DATABASE paysprint_wealth;
 \c paysprint_wealth
 ```
 
-Load Enterprise Schema
+Load Enterprise Schema\Data - Running a SQL file and all the commands in it
 ```
-\i {{ PATH TO enterprise-schema.sql }}
+\i {{ PATH TO .sql file (forward slashes, no quotes) }}
 ```
 
 ## Basic Queries Against the Enterprise Schema
