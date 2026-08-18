@@ -1,4 +1,4 @@
-# Day 2
+# Day 2 Part 1 - Advanced Queries
 
 ## Production-Grade Queries, Subqueries and CTEs
 
