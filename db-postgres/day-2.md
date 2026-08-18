@@ -38,6 +38,23 @@ select * from client_buy_totals where total > (SELECT AVG(total) from client_buy
 ```
 
 4. Same result as task 3, using a derived table instead of a CTE. Compare readability with your partner.
-
+```
+SELECT * FROM (
+	select account_id, sum(quantity * price) as total
+	from transactions
+	where txn_type = 'BUY'
+	group by account_id
+)
+where TOTAL > (
+ SELECT AVG(total) FROM (
+	select account_id, sum(quantity * price) as total
+	from transactions
+	where txn_type = 'BUY'
+	group by account_id
+ )
+)
+```
 
 Finish early: try task 3 again using a window function instead of a second aggregate pass.
+
+```
