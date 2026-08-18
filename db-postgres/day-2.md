@@ -55,7 +55,7 @@ where TOTAL > (
 )
 ```
 
-Finish early: try task 3 again using a window function instead of a second aggregate pass.
+5. Try task 3 again using a window function instead of a second aggregate pass.
 
 ```
 SELECT * FROM (
