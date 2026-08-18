@@ -127,3 +127,12 @@ ORDER BY SUM(quantity * price) DESC;
 select name, joined_date, RANK() over (ORDER BY joined_date)
 FROM clients;
 ```
+
+9. BUY and SELL value side by side, per account
+```
+select account_id, 
+SUM(case when txn_type = 'BUY' then (quantity * price) else 0 end) as BUY,
+SUM(case when txn_type = 'SELL' then (quantity * price) else 0 end) as SELL
+from transactions
+group by account_id
+```
