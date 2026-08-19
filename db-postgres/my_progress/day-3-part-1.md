@@ -1,4 +1,4 @@
-# Day 3
+# Day 3 Part 1
 
 ## Structured Problem Solving
 
@@ -7,7 +7,7 @@
 
 ---
 
-## 1. Clarifying Questions and Assumptions
+### 1. Clarifying Questions and Assumptions
 
 ```
 Question: What is the actual measure of a significant drift?
@@ -36,7 +36,7 @@ Assumption: The assumption we are making is that drift is something that happens
 
 ---
 
-## 2. Entities and Data Needed
+### 2. Entities and Data Needed
 
 | Table | Columns Used | Why |
 |-------|--------------|-----|
@@ -49,7 +49,7 @@ Assumption: The assumption we are making is that drift is something that happens
 | Client Portfolio | client_id, portfolio_id |
 ---
 
-## 3. Modelling Changes
+### 3. Modelling Changes
 
 Does anything need to be added to the schema, or is this answerable with the tables you
 already have?
@@ -58,7 +58,7 @@ SO all the data that is required is present in the schema, but not directly answ
 
 ---
 
-## 4. Approach (Plain English)
+### 4. Approach (Plain English)
 
 Drift, when happens, has to trigger/interrupt the backend/DB. When done so, we trigger a computation that performs the necessary calculations to calculate the drift percentage for each client based on their different portfolio holdings. 
 
@@ -66,13 +66,13 @@ This calculation happens as a scheduled batch job, synchronising with when the p
 
 ---
 
-## 5. Validation Sentence for Compliance
+### 5. Validation Sentence for Compliance
 
 We are triggering/performing this computation whenever the portfolio updates.
 
 ---
 
-## Bonus: Draft SQL (Extension Task)
+### Bonus: Draft SQL (Extension Task)
 
 ```
 Simply the addition of risk profile attribute and a potential significant drift percentage for each specific portfolio.
