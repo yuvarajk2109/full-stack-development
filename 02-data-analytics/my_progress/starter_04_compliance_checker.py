@@ -89,9 +89,17 @@ def write_report(path, trades, skipped_count, flags_by_trade, frequent_clients):
     """TODO: write the report described in the lab README to `path`, and
     print the same content to the console."""
     with open(path, "w") as f:
+        """
+            Displaying trades first, nicely formatted in a table
+            The same data is also displayed to the console, 
+            so each print/write is captured in a variable and then printed/written
+        """
         line = f"{'Trade ID':<12}{'Side':<12}{'Quantity':>8}{'Price':>12}{'Value':>12}{'Flags':>20}"
         print("\n\n" + line)
         f.write(line + "\n")
+        """
+            Cycling through each trade and displaying the information
+        """
         for trade in trades:
             flags = ", ".join(flags_by_trade[trade['trade_id']])
             line = f"{trade['trade_id']:<12}{trade['side']:<12}{trade['quantity']:>8}{float(trade['price']):>12,.2f}{trade['value']:>12,.2f}{flags:>20}"
@@ -99,6 +107,10 @@ def write_report(path, trades, skipped_count, flags_by_trade, frequent_clients):
             f.write(line + "\n")
         f.write("\n")
         print()
+        
+        """
+        Other KPIs -> Skipped Records, Frequent Clients Info
+        """
         line = f"No. of Invalid Records Skipped: {skipped_count}"
         print(line)
         f.write(line + "\n")
