@@ -4,7 +4,7 @@
 # - use else to accumulate the running total only on success
 # - use finally to print a "processed <trade_id>" line unconditionally
 
-from starter_02_math import InvalidTradeError, trade_value, classify_trade, safe_trade_value
+from starter_02A_math import InvalidTradeError, trade_value, classify_trade, safe_trade_value
 
 trades = [
     {"trade_id": "T0001", "quantity": 120, "price": 185.32},
