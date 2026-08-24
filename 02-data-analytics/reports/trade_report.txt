@@ -1,0 +1,22 @@
+Trade ID    Side        Quantity       Price       Value               Flags
+T0001       BUY              120      185.32   22,238.40               LARGE
+T0002       BUY               60      402.11   24,126.60               LARGE
+T0003       BUY             5000       98.75  493,750.00               LARGE
+T0004       SELL              40      186.10    7,444.00                    
+T0005       BUY               25      141.87    3,546.75                    
+T0006       BUY              300       84.22   25,266.00               LARGE
+T0007       SELL              20      404.55    8,091.00                    
+T0009       BUY             2000       98.90  197,800.00               LARGE
+T0010       BUY               15      238.44    3,576.60                    
+T0011       BUY              100       84.10    8,410.00                    
+T0012       BUY               10      405.20    4,052.00                    
+T0013       SELL              10      143.02    1,430.20                    
+T0015       SELL              50       85.01    4,250.50                    
+T0016       BUY              200      187.55   37,510.00  LARGE, HIGH_VOLUME
+T0017       BUY             3000       99.10  297,300.00               LARGE
+T0018       BUY                4    2,450.00    9,800.00                    
+T0019       BUY                8      241.20    1,929.60                    
+T0020       SELL               5      239.90    1,199.50                    
+
+No. of Invalid Records Skipped: 2
+Frequent Clients (with 3 or more trades): Alice Chen, Ben Whitfield, Chidi Nwosu
