@@ -1,0 +1,11 @@
+Client Name          Value               
+Alice Chen           38,092.40           
+Ben Whitfield        35,190.60           
+Chidi Nwosu          8,845.10            
+Diane Kowalski       4,976.95            
+Elliot Park          29,516.50           
+Farida Haidari       30,800.00           
+Grace Lindqvist      4,776.10            
+Hassan Malik         4,052.00            
+Isla Fraser          8,300.00            
+Jamal Ferris         37,510.00           
