@@ -33,7 +33,7 @@ for trade in trades:
 
 sorted_clients = sorted(clients.items())
     
-SUMMARY_PATH = Path(__file__).resolve().parents[1] / "shared" / "client_summary.txt"
+SUMMARY_PATH = Path(__file__).resolve().parents[1] / "reports" / "client_summary.txt"
 with open(SUMMARY_PATH, "w") as f:
     line = f"{'Client Name':<20} {'Value':<20}"
     print(line)
@@ -43,4 +43,4 @@ with open(SUMMARY_PATH, "w") as f:
         print(line)
         f.write(line + "\n")
         
-print(f"\nSummary written to {SUMMARY_PATH.name} under the shared folder")    
+print(f"\nSummary written to {SUMMARY_PATH.name} under the reports folder")    
