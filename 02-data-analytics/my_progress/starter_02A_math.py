@@ -18,7 +18,7 @@ def trade_value(quantity: float, price: float) -> float:
     return quantity * price
 
 def classify_trade(value: float, threshold: float = 20000) -> str:
-    return 'LARGE TRADE' if value > 20000 else 'default'
+    return 'LARGE TRADE' if value > threshold else 'default'
 
 def safe_trade_value(trade: dict) -> float:
     try:
