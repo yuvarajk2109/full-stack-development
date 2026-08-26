@@ -102,14 +102,6 @@ def compute_insights(df):
     avg_by_asset_class = df.groupby("asset_class")["value"].mean().round(2)
     highest_avg_asset_class = avg_by_asset_class.idxmax()
 
-    """
-    Question 6
-    What percentage of trades were Equity trades?
-    """
-    equity_trade_percentage = round(
-        (df["asset_class"].eq("Equity").sum() / len(df)) * 100, 1
-    )
-
     return {
         "asset_share": asset_share,
         "top_asset_class": top_asset_class,
