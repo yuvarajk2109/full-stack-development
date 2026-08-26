@@ -39,12 +39,13 @@ print("Chart 2 SUCCESSFULLY saved: Total Value by Week")
 # 3. Scatter plot: quantity vs value, Equity trades only, labelled axes
 #    -> chart_quantity_vs_value.png
 equity_trades = trades[trades['asset_class'] == 'Equity']
-fix, ax = plt.subplots(figsize=(10, 10))
+fig, ax = plt.subplots(figsize=(10, 10))
 ax.scatter(equity_trades['quantity'], equity_trades['value'], color='#368727', alpha=0.7)
 ax.set_title('Quantity vs Trade Value of Equity Trades')
 ax.set_xlabel('Quantity')
 ax.set_ylabel('Trade Value ($)')
 fig.savefig(OUT / 'chart_03_quantity_vs_value.png')
+plt.close(fig)
 print("Chart 3 SUCCESSFULLY saved: Scatter Plot of Quantity vs Value for Equity Trades")
 
 # 4. One deliberately misleading chart, with a comment explaining the specific flaw
