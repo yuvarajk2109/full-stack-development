@@ -1,0 +1,24 @@
+sequenceDiagram
+participant c as client
+participant s as system
+participant o as order
+participant r as restauraunt
+participant b as bill
+
+c->>s: openApplication(c.getId())
+s-->c: 200
+s->>c: Welcome Page
+c-->s: order(items)
+s-->o: order(items)
+o-->r: order(availableItems)
+r-->c: 200 (Items Available)
+s-->s: unpaidCheck(threshold = 500)
+s-->c: True/False
+r-->b: True: generateBill(c, items)
+b-->c: 200 (Bill)
+c->>r: makePayment(bill)
+r-->c: paymentStatus(c, bill)
+r-->s: orderStatus()
+s-->c: status(estimation)
+s-->c: status(delivery)
+s-->c: status(delivered)
