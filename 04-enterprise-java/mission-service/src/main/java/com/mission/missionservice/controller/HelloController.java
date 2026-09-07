@@ -9,10 +9,10 @@ import java.util.Map;
 @RestController
 public class HelloController {
 
-    private HelloService helloService;
+    private final HelloService helloService;
 
-    public HelloController() {
-        this.helloService = new HelloService();
+    public HelloController(HelloService helloService) {
+        this.helloService = helloService;
     }
 
     @GetMapping("/hello")
