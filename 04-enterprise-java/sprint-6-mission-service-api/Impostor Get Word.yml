@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: http://localhost:8080/impostor/1/word
+  url: http://localhost:8080/impostor/word/3
   auth: inherit
 
 settings:

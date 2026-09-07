@@ -17,7 +17,7 @@ public class GameController {
         this.gameService = gameService;
     }
 
-    @GetMapping("impostor/{userId}/word")
+    @GetMapping("impostor/word/{userId}")
     public Map<String, String> impostorWord(@PathVariable String userId) {
         return this.gameService.impostorWord(userId);
     }
