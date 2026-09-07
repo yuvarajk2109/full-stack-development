@@ -1,0 +1,15 @@
+info:
+  name: Impostor Get Word
+  type: http
+  seq: 5
+
+http:
+  method: GET
+  url: http://localhost:8080/impostor/1/word
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
