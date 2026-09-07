@@ -22,13 +22,13 @@ Rewrite the API properly. One row per operation.
 
 | Method | URL                 | Status codes it can return | Idempotent? |
 |--------|---------------------|----------------------------|-------------|
-| GET    | /v1/orders          | 200, 403                   | NO          |
-| GET    | /v1/orders/{id}     | 200, 403, 404              | NO          |
-| POST   | /v2/orders          | 201, 403, 404              | YES         |
-| DELETE | /v1/orders/{id}     | 204, 404                   | NO          |
-| PUT    | /v1/orders/{id}     | 204, 404                   | NO          |
-| POST   | /v1/orders          | 200, 403, 404              | YES         |
-| GET    | /v1/orders/{id}/fee | 200, 403, 404              | NO          |
+| GET    | /v1/orders          | 200, 403                   | YES         |
+| GET    | /v1/orders/{id}     | 200, 403, 404              | YES         |
+| POST   | /v2/orders          | 201, 403, 404              | NO          |
+| DELETE | /v1/orders/{id}     | 204, 404                   | YES         |
+| PUT    | /v1/orders/{id}     | 204, 404                   | YES         |
+| POST   | /v1/orders          | 200, 403, 404              | NO          |
+| GET    | /v1/orders/{id}/fee | 200, 403, 404              | YES         |
 
 ## Part 3: Versioning
 
