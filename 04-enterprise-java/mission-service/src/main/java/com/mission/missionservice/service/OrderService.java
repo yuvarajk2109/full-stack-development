@@ -1,5 +1,6 @@
 package com.mission.missionservice.service;
 
+import com.mission.missionservice.dto.FeeResponseDto;
 import com.mission.missionservice.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +21,8 @@ public class OrderService {
         this.orderRepository = orderRepository;
     }
 
-    public Map<String, Double> calculateFee(String ticker, Double tradeValue) {
+    public Double calculateFee(String ticker, Double tradeValue) {
         Double feeRate = orderRepository.findFeeRate(ticker);
-        Double fee = tradeValue * feeRate;
-        return Map.of("Total Fee", fee);
+        return tradeValue * feeRate;
     }
 }

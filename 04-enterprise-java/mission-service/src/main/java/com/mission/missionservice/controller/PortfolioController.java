@@ -1,23 +1,40 @@
 package com.mission.missionservice.controller;
 
-import com.mission.missionservice.service.PortfolioService;
+import com.mission.missionservice.entity.Advisor;
+import com.mission.missionservice.entity.Transaction;
+import com.mission.missionservice.mapper.AdvisorMapper;
+import com.mission.missionservice.mapper.TransactionMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
+import java.util.List;
 
+// Given - wires both mappers into endpoints so you can verify your work
+// with curl.
 @RestController
 public class PortfolioController {
 
-    private final PortfolioService portfolioService;
+    private final AdvisorMapper advisorMapper;
+    private final TransactionMapper transactionMapper;
 
-    public PortfolioController(PortfolioService portfolioService) {
-        this.portfolioService = portfolioService;
+    public PortfolioController(AdvisorMapper advisorMapper, TransactionMapper transactionMapper) {
+        this.advisorMapper = advisorMapper;
+        this.transactionMapper = transactionMapper;
     }
 
-    @GetMapping("/portfolio/{clientId}")
-    public Map<String, String> getPortfolio(@PathVariable String clientId) {
-        return portfolioService.getPortfolio(clientId);
+    @GetMapping("/advisors/{advisorId}")
+    public ResponseEntity<Advisor> getAdvisor(@PathVariable int advisorId) {
+        Advisor advisor = advisorMapper.findById(advisorId);
+        if (advisor == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(advisor);
+    }
+
+    @GetMapping("/accounts/{accountId}/transactions")
+    public List<Transaction> getTransactions(@PathVariable int accountId) {
+        return transactionMapper.findByAccountId(accountId);
     }
 }

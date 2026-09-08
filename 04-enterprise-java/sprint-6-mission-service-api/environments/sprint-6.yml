@@ -1,0 +1,4 @@
+name: sprint-6
+variables:
+  - secret: true
+    name: JWT_TOKEN
