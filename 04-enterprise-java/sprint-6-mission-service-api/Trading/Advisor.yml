@@ -1,7 +1,7 @@
 info:
   name: Advisor
   type: http
-  seq: 8
+  seq: 4
 
 http:
   method: GET

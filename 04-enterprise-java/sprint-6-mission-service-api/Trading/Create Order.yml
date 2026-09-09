@@ -1,7 +1,7 @@
 info:
   name: Create Order
   type: http
-  seq: 7
+  seq: 3
 
 http:
   method: POST
@@ -10,10 +10,9 @@ http:
     type: json
     data: |-
       {
-        "ticker": "AAPL",
         "instrumentType": "EQUITY",
-        "quantity": 100,
-        "price": 150.00,
+        "quantity": 1000005,
+        "price": 150000.00,
         "side": "BUY"
       }
   auth:

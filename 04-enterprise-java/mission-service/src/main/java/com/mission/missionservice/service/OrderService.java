@@ -1,28 +1,30 @@
 package com.mission.missionservice.service;
 
-import com.mission.missionservice.dto.FeeResponseDto;
+import com.mission.missionservice.exception.OrderRejectedException;
 import com.mission.missionservice.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-
-// Kata: the service layer. Constructor-inject an OrderRepository (no
-// @Autowired needed - a single constructor is enough), and implement
-// calculateFee(ticker, tradeValue) as tradeValue * repository.findFeeRate(ticker).
-// See OrderServiceTest.java for the exact behaviour expected.
 @Service
 public class OrderService {
 
-    // TODO: add a private final OrderRepository field, and a constructor
-    // that accepts one and assigns it.
-    private final OrderRepository orderRepository;
+    // A single order above this value needs manual sign-off - not a
+    // malformed request (Bean Validation's job), a well-formed order this
+    // service still won't process on its own. This is the business rule
+    // Module 6's model-answers.md pointed at without anywhere to put it.
+    private static final double MAX_TRADE_VALUE = 1_000_000.0;
 
-    public OrderService(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
+    private final OrderRepository repository;
+
+    public OrderService(OrderRepository repository) {
+        this.repository = repository;
     }
 
-    public Double calculateFee(String ticker, Double tradeValue) {
-        Double feeRate = orderRepository.findFeeRate(ticker);
-        return tradeValue * feeRate;
+    public double calculateFee(String ticker, double tradeValue) {
+        if (tradeValue > MAX_TRADE_VALUE) {
+            throw new OrderRejectedException(
+                    "trade value " + tradeValue + " exceeds the single-order limit of " + MAX_TRADE_VALUE);
+        }
+        double rate = repository.findFeeRate(ticker);
+        return tradeValue * rate;
     }
 }

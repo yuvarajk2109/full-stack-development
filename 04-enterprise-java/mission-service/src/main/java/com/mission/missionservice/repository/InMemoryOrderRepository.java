@@ -5,9 +5,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-// Given, don't modify. A hardcoded Map stands in for Postgres, exactly like
-// Module 3's demo - the whole point of OrderRepository is that OrderService
-// never needs to know that.
 @Repository
 public class InMemoryOrderRepository implements OrderRepository {
 
