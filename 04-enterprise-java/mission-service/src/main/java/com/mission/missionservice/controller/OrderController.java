@@ -1,62 +1,87 @@
 package com.mission.missionservice.controller;
-
-import com.mission.missionservice.dto.FeeResponseDto;
+import com.mission.missionservice.domain.*;
 import com.mission.missionservice.dto.OrderRequestDto;
 import com.mission.missionservice.dto.OrderResponseDto;
-import com.mission.missionservice.service.OrderService;
+import com.mission.missionservice.entity.HoldingRow;
+import com.mission.missionservice.entity.InstrumentRow;
+import com.mission.missionservice.exception.OrderRejectedException;
+import com.mission.missionservice.mapper.AccountMapper;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.NoSuchElementException;
 
-// Kata: the controller layer. Constructor-inject an OrderService, and add a
-// @GetMapping("/orders/{ticker}/fee") method that takes the ticker as a
-// @PathVariable and the trade value as a @RequestParam double tradeValue,
-// then returns service.calculateFee(ticker, tradeValue).
-//
-// Try: curl "http://localhost:8080/orders/AAPL/fee?tradeValue=10000"
+// Every earlier module in this sprint meets here:
+//   Module 4  - REST resource shape:      POST /accounts/{accountId}/orders
+//   Module 6  - DTO + Bean Validation:     @Valid OrderRequestDto
+//   Module 7  - MyBatis persistence:       AccountMapper, against the real Sprint 3 schema
+//   Module 9  - JWT security:              @AuthenticationPrincipal Jwt (SecurityConfig protects this)
+//   Module 10 - Centralised error handling: every failure below throws, never returns an ad-hoc body
+// domain.* (OrderValidator, HoldingUpdater, InstrumentFactory, Feeable) is Sprint 5,
+// Module 13, completely unchanged - see shared/mission-brief.md.
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("/accounts/{accountId}/orders")
 public class OrderController {
 
-    // TODO: add a private final OrderService field, and a constructor that
-    // accepts one and assigns it.
-    private final OrderService orderService;
-    private final Map<String, OrderResponseDto> orders = new ConcurrentHashMap<>();
-    private final AtomicInteger idSequence = new AtomicInteger(1);
+    // A real risk limit would come from the client's own record - hardcoded
+    // here to keep the demo focused on assembly, not on adding yet another
+    // table lookup.
+    private static final double RISK_LIMIT = 2_000_000.0;
 
-    public OrderController(OrderService orderService) {
-        this.orderService = orderService;
-    }
+    private final AccountMapper accountMapper;
+    private final OrderValidator orderValidator = new OrderValidator();
+    private final HoldingUpdater holdingUpdater = new HoldingUpdater();
+    private final InstrumentFactory instrumentFactory = new InstrumentFactory();
 
-    // TODO: add the @GetMapping method described above.
-    @GetMapping("/{ticker}/fee")
-    public ResponseEntity<FeeResponseDto> calculateFee(@PathVariable String ticker, @RequestParam Double tradeValue) {
-        FeeResponseDto response = new FeeResponseDto(orderService.calculateFee(ticker, tradeValue));
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<OrderResponseDto> getOrder(@PathVariable String id) {
-        OrderResponseDto order = orders.get(id);
-        if (order == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(order);
+    public OrderController(AccountMapper accountMapper) {
+        this.accountMapper = accountMapper;
     }
 
     @PostMapping
-    public ResponseEntity<OrderResponseDto> submitOrder(@Valid @RequestBody OrderRequestDto request) {
-        double tradeValue = request.quantity() * request.price();
-        double fee = orderService.calculateFee(request.ticker(), tradeValue);
-        String id = String.valueOf(idSequence.getAndIncrement());
-        OrderResponseDto response = new OrderResponseDto(id, "ACCEPTED", fee, null);
+    public ResponseEntity<OrderResponseDto> submitOrder(@PathVariable int accountId,
+                                                        @Valid @RequestBody OrderRequestDto dto,
+                                                        @AuthenticationPrincipal Jwt jwt) {
+        InstrumentRow instrument = accountMapper.findInstrument(dto.ticker());
+        if (instrument == null) {
+            throw new NoSuchElementException("no such instrument: " + dto.ticker());
+        }
 
-        URI location = URI.create("/orders/" + id);
-        return ResponseEntity.created(location).body(response);
+        HoldingRow existingHolding = accountMapper.findHolding(accountId, dto.ticker());
+        double currentQuantity = existingHolding == null ? 0.0 : existingHolding.getQuantity();
+
+        // Simplified for this demo: real portfolio valuation needs live
+        // market prices, which this schema doesn't carry. Using the
+        // incoming order's own price against the existing holding is a
+        // stand-in that keeps OrderValidator's real signature and real
+        // logic exercised against real data, without fabricating a price
+        // feed this sprint was never going to build.
+        double currentPortfolioValue = currentQuantity * dto.price();
+
+        OrderRequest domainRequest = new OrderRequest(dto.quantity(), dto.price(), dto.isBuy());
+        ValidationResult result = orderValidator.validate(
+                domainRequest, currentQuantity, currentPortfolioValue, RISK_LIMIT);
+
+        if (!result.isValid()) {
+            throw new OrderRejectedException(result.getReason());
+        }
+
+        Holding holding = new Holding(currentQuantity);
+        holdingUpdater.applyOrder(holding, dto.isBuy(), dto.quantity());
+
+        if (existingHolding == null) {
+            accountMapper.insertHolding(accountId, instrument.getInstrumentId(), holding.getQuantity());
+        } else {
+            accountMapper.updateHoldingQuantity(existingHolding.getHoldingId(), holding.getQuantity());
+        }
+
+        Instrument instrumentObj = instrumentFactory.create(
+                instrument.getAssetClass().toUpperCase(), instrument.getTicker());
+        double fee = instrumentObj.calculateFee(domainRequest.tradeValue());
+
+        return ResponseEntity.ok(new OrderResponseDto("ACCEPTED", fee, holding.getQuantity()));
     }
 }
+
