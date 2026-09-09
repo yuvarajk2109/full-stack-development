@@ -1,12 +1,14 @@
 info:
-  name: Create Order
+  name: Advisor
   type: http
-  seq: 7
+  seq: 8
 
 http:
   method: GET
-  url: http://localhost:8080/orders
-  auth: inherit
+  url: http://localhost:8080/advisors/1
+  auth:
+    type: bearer
+    token: "{{JWT_TOKEN}}"
 
 settings:
   encodeUrl: true

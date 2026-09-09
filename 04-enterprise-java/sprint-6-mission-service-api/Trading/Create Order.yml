@@ -1,0 +1,27 @@
+info:
+  name: Create Order
+  type: http
+  seq: 7
+
+http:
+  method: POST
+  url: http://localhost:8080/orders
+  body:
+    type: json
+    data: |-
+      {
+        "ticker": "AAPL",
+        "instrumentType": "EQUITY",
+        "quantity": 100,
+        "price": 150.00,
+        "side": "BUY"
+      }
+  auth:
+    type: bearer
+    token: "{{JWT_TOKEN}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

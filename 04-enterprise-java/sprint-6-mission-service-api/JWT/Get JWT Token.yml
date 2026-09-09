@@ -1,11 +1,11 @@
 info:
-  name: Mission - Requires JWT
+  name: Get JWT Token
   type: http
-  seq: 10
+  seq: 3
 
 http:
-  method: GET
-  url: http://localhost:8080/mission
+  method: POST
+  url: http://localhost:4000/login
   auth: inherit
 
 settings:

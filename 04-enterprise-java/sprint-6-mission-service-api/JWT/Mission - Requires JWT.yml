@@ -1,0 +1,17 @@
+info:
+  name: Mission - Requires JWT
+  type: http
+  seq: 10
+
+http:
+  method: GET
+  url: http://localhost:8080/mission
+  auth:
+    type: bearer
+    token: "{{JWT_TOKEN}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

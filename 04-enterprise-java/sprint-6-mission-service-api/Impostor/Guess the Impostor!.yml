@@ -6,7 +6,9 @@ info:
 http:
   method: POST
   url: http://localhost:8080/impostor/1
-  auth: inherit
+  auth:
+    type: bearer
+    token: "{{JWT_TOKEN}}"
 
 settings:
   encodeUrl: true

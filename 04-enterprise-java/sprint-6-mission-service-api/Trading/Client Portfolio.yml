@@ -6,7 +6,9 @@ info:
 http:
   method: GET
   url: http://localhost:8080/portfolio/P1
-  auth: inherit
+  auth:
+    type: bearer
+    token: "{{JWT_TOKEN}}"
 
 settings:
   encodeUrl: true

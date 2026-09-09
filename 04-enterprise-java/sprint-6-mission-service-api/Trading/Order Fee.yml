@@ -10,7 +10,9 @@ http:
     - name: tradeValue
       value: "10000"
       type: query
-  auth: inherit
+  auth:
+    type: bearer
+    token: "{{JWT_TOKEN}}"
 
 settings:
   encodeUrl: true
