@@ -5,8 +5,10 @@ info:
 
 http:
   method: GET
-  url: http://localhost:8080/hello
-  auth: inherit
+  url: hello
+  auth:
+    type: bearer
+    token: "{{JWT_TOKEN}}"
 
 settings:
   encodeUrl: true

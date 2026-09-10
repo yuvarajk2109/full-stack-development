@@ -2,3 +2,5 @@ name: sprint-6
 variables:
   - secret: true
     name: JWT_TOKEN
+  - name: base_url
+    value: http://localhost:8080

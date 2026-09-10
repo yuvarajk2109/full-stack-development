@@ -5,14 +5,15 @@ info:
 
 http:
   method: POST
-  url: http://localhost:8080/orders
+  url: accounts/1/orders
   body:
     type: json
     data: |-
       {
+        "ticker": "ULVR.L",
         "instrumentType": "EQUITY",
-        "quantity": 1000005,
-        "price": 150000.00,
+        "quantity": 10,
+        "price": 40.0,
         "side": "BUY"
       }
   auth:
