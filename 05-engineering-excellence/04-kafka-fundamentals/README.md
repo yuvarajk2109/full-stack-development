@@ -55,13 +55,18 @@ The mission's trading platform needs to decide what to use as the partition key 
 Two candidates: **account ID**, or **ticker**.
 
 1. Given Settlement's requirement above, which key satisfies it, and why?
+`It has to be accountId, as the requirement is that for any given account, it needs the trades in the order that they happened.`
 2. Is there a key choice that would satisfy Settlement's ordering requirement AND still spread
    events across multiple partitions (rather than everything landing in one partition)? Explain
    your reasoning — don't just name a key, justify it against what "same key = same partition"
-   actually guarantees.
+   actually guarantees. 
+`It doesn't depend on just the key. We of course choose the accountId as partition key - this means that all the trades for an account
+will always end up in the same partition, and since the producer actually processes trade data in the order that they come in, we implicity ensure
+that the trades are in the proper order as well.`
 3. The risk dashboard and the compliance log both consume the *same* topic as Settlement. Does
    the partition key chosen for Settlement's benefit cause either of them a problem? Why or why
    not?
+`Not necessarily. In fact, it's a good thing for the risk dashboard which alse needs account-wise trade orders, and compliance log just needs all data, so the order in which data is received for that doesn't matter.`
 
 ### Part C — Offsets in Practice
 
@@ -70,8 +75,10 @@ minutes later.
 
 1. What does Settlement need to have stored *before* the crash, to pick up correctly where it
    left off?
+`Just the partition and the offset, which any Consumer implicitly stores. This is why we have both partition and offset.`
 2. If Settlement had NOT stored that, what are the two possible failure modes it could hit on
    restart? Name both, specifically.
+`The consumer would have to reprocess the same data, or it might skip some data - both of which are bad.`
 
 ## Deliverable
 
