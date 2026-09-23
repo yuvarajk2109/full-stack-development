@@ -1,18 +1,11 @@
 info:
-  name: Login
+  name: Logout
   type: http
-  seq: 5
+  seq: 7
 
 http:
   method: POST
-  url: auth/login
-  body:
-    type: json
-    data: |-
-      {
-        "username": "dave",
-        "password": "mission123"
-      }
+  url: auth/logout
   auth: inherit
 
 settings:
