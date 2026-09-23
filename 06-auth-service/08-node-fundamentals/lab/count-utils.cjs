@@ -6,7 +6,7 @@
 function countByOutcome(attempts) {
   let successCount = 0;
   let failCount = 0;
-  for (const outcome of attempts) {
+  for (const { outcome } of attempts) {
     if (outcome == "success") {
       successCount++;
     } else {
