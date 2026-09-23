@@ -1,0 +1,22 @@
+info:
+  name: Refresh
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: auth/refresh
+  body:
+    type: json
+    data: |-
+      {
+        "refreshToken": "stub-refresh-token-for-alice-o6xad3ez"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
