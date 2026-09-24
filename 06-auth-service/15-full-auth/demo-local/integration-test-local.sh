@@ -15,15 +15,15 @@ set -euo pipefail
 # Docker version did with -e SPRING_DATASOURCE_URL.
 
 # ── Config (override any of these via the environment) ────────────────────────
-MISSION_SERVICE_DIR="${MISSION_SERVICE_DIR:-../../../leap-sprint6/solutions/13-mission-build-containerise-integration-test-wrap-up}"
+MISSION_SERVICE_DIR="${MISSION_SERVICE_DIR:-C:/Users/Administrator/Documents/GitHub/full-stack-exercises/04-enterprise-java/mission-service}"
 AUTH_PORT="${AUTH_PORT:-3000}"
 SERVICE_PORT="${SERVICE_PORT:-8080}"
 
 DB_HOST="${DB_HOST:-localhost}"
 DB_PORT="${DB_PORT:-5432}"       # native Postgres default; the Docker lab used 5433
-DB_NAME="${DB_NAME:-mission}"
+DB_NAME="${DB_NAME:-paysprint_wealth}"
 DB_USER="${DB_USER:-postgres}"
-DB_PASSWORD="${DB_PASSWORD:-mission}"
+DB_PASSWORD="${DB_PASSWORD:-n3u3d4!}"
 
 AUTH_PID=""
 SERVICE_PID=""
@@ -51,28 +51,61 @@ echo "PASS: Postgres reachable at $DB_HOST:$DB_PORT/$DB_NAME"
 echo "== Stage: Build + start the auth service (localhost:$AUTH_PORT) =="
 npm ci >/dev/null 2>&1 || npm install >/dev/null 2>&1
 npm run build >/dev/null
-PORT="$AUTH_PORT" node dist/main.js >/tmp/auth-local.log 2>&1 &
+mkdir -p /tmp
+AUTH_LOG="/tmp/auth-local.log"
+echo "Starting auth service, logs -> $AUTH_LOG"
+PORT="$AUTH_PORT" node dist/main.js >"$AUTH_LOG" 2>&1 &
 AUTH_PID=$!
+echo "Auth service PID: $AUTH_PID"
+sleep 1
+echo "Auth service initial logs (first 40 lines):"
+sed -n '1,40p' "$AUTH_LOG" || true
 
 # ── Stage: Start the mission service (YOUR checkout, unmodified) ──────────────
 echo "== Stage: Build + start the mission service (localhost:$SERVICE_PORT) =="
-SPRING_DATASOURCE_URL="jdbc:postgresql://$DB_HOST:$DB_PORT/$DB_NAME" \
-SPRING_DATASOURCE_USERNAME="$DB_USER" \
-SPRING_DATASOURCE_PASSWORD="$DB_PASSWORD" \
-  mvn -q -f "$MISSION_SERVICE_DIR/pom.xml" spring-boot:run \
-    -Dspring-boot.run.arguments="--server.port=$SERVICE_PORT" \
-    >/tmp/mission-local.log 2>&1 &
+MISSION_LOG="/tmp/mission-local.log"
+echo "Starting mission service, logs -> $MISSION_LOG"
+MAVEN_RUN_ARGS="--server.port=$SERVICE_PORT --debug --spring.datasource.url=jdbc:postgresql://$DB_HOST:$DB_PORT/$DB_NAME --spring.datasource.username=$DB_USER --spring.datasource.password=$DB_PASSWORD"
+echo "Invoking Maven with explicit JVM system properties to ensure Spring sees the DB settings"
+mvn -q -f "$MISSION_SERVICE_DIR/pom.xml" \
+  -Dspring.datasource.url="jdbc:postgresql://$DB_HOST:$DB_PORT/$DB_NAME" \
+  -Dspring.datasource.username="$DB_USER" \
+  -Dspring.datasource.password="$DB_PASSWORD" \
+  -DskipTests \
+  spring-boot:run \
+  -Dspring-boot.run.arguments="$MAVEN_RUN_ARGS" \
+  >"$MISSION_LOG" 2>&1 &
 SERVICE_PID=$!
+echo "Mission service PID: $SERVICE_PID"
+sleep 1
+echo "Mission service initial logs (first 40 lines):"
+sed -n '1,40p' "$MISSION_LOG" || true
 
 # ── Stage: Wait for both to be ready ─────────────────────────────────────────
 echo "== Stage: Wait for both to be ready =="
-for _ in $(seq 1 30); do
-  curl -s -o /dev/null "http://localhost:$AUTH_PORT/health" && break || sleep 2
+AUTH_LOG_TAIL_LINES=30
+MISSION_LOG_TAIL_LINES=30
+for i in $(seq 1 30); do
+  if curl -s -o /dev/null "http://localhost:$AUTH_PORT/health"; then
+    echo "Auth service responded on attempt $i"
+    break
+  else
+    echo "Auth not ready (attempt $i). Tail of $AUTH_LOG:"
+    tail -n "$AUTH_LOG_TAIL_LINES" "$AUTH_LOG" || true
+    sleep 2
+  fi
 done
-for _ in $(seq 1 60); do
+for i in $(seq 1 60); do
   code=$(curl -s -o /dev/null -w "%{http_code}" -X POST "http://localhost:$SERVICE_PORT/accounts/1/orders" \
     -H "Content-Type: application/json" -d '{}' || true)
-  [ "$code" != "000" ] && break || sleep 2
+  if [ "$code" != "000" ]; then
+    echo "Mission service responded with http code $code on attempt $i"
+    break
+  else
+    echo "Mission not ready (attempt $i). Tail of $MISSION_LOG:"
+    tail -n "$MISSION_LOG_TAIL_LINES" "$MISSION_LOG" || true
+    sleep 2
+  fi
 done
 
 # ── Stage: Smoke test - no token is rejected ─────────────────────────────────
