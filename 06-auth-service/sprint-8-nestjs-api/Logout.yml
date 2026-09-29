@@ -6,6 +6,12 @@ info:
 http:
   method: POST
   url: auth/logout
+  body:
+    type: json
+    data: |-
+      {
+        "refreshToken": "stub-refresh-token-for-dave-yhofz4jb"
+      }
   auth: inherit
 
 settings:

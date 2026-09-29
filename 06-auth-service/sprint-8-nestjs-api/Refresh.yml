@@ -10,7 +10,7 @@ http:
     type: json
     data: |-
       {
-        "refreshToken": "stub-refresh-token-for-alice-o6xad3ez"
+        "refreshToken": "stub-refresh-token-for-dave-yhofz4jb"
       }
   auth: inherit
 
