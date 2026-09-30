@@ -64,7 +64,13 @@ together. Given that, explain in your own words *why* they end up sharing the ex
 data — what specifically guarantees `inject(Holdings)` doesn't hand each component its own
 separate copy?
 
+`It seems to work just like a Spring Bean - one instance shared across the entire running application.
+This is why they end up sharing the same service and aren't handed their separate copies.`
+
 A second question: `add()` and `remove()` live on the service, not the component. If a third,
 future component also needed to add a holding, what would that component need to do
 differently from what `HoldingsSummary` already does? (Try to answer without looking at the
 model answer — the honest answer is shorter than it might seem.)
+
+`I don't think it needs to do anything different -> it just has to inject the service, and use its functions.
+That's the point of the service - it follows the singleton design pattern.`
