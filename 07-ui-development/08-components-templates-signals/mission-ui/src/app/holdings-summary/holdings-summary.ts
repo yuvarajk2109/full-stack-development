@@ -24,10 +24,14 @@ export class HoldingsSummary {
   );
 
   protected addHolding(): void {
-    this.holdings.update((current) => [
-      ...current,
-      { ticker: 'BP.L', quantity: 200, price: 4.8 },
-    ]);
+    // this.holdings.update((current) => [
+    //   ...current,
+    //   { ticker: 'BP.L', quantity: 200, price: 4.8 },
+    // ]);
+    this.holdings.update((current) => {
+      current.push({ ticker: 'BP.L', quantity: 200, price: 4.8 });
+      return current; // same array reference as before
+    });
   }
 
   protected removeHolding(ticker: string): void {

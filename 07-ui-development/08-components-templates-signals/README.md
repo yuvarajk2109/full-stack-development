@@ -22,6 +22,7 @@ Build a `holdings-summary` component, the same shape as today's demo, in your ow
    - A method `addHolding()` that appends one new holding to the signal via `.update()`.
    - A method `removeHolding(ticker: string)` that removes a holding by ticker, also via
      `.update()`.
+     
 
 3. In `holdings-summary.html`, render the list with `@for`/`@empty`, a Remove button per row
    (calling `removeHolding`), the computed total, and an Add button (calling `addHolding`).
