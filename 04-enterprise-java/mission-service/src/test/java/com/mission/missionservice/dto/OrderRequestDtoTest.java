@@ -8,6 +8,9 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import com.mission.missionservice.enums.InstrumentType;
+import com.mission.missionservice.enums.Side;
+
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

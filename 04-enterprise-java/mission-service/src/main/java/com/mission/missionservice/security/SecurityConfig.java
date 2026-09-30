@@ -11,18 +11,17 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Configuration
 public class SecurityConfig {
 
-    // The same string the Node auth stub signs tokens with. In a real
-    // deployment this comes from a secrets manager and is injected via an
-    // environment variable, not hardcoded twice - it's spelled out here so
-    // the "the two services just agree on a secret" idea is concrete, not
-    // abstract.
     @Value("${jwt.shared-secret}")
     private String sharedSecret;
 
@@ -35,25 +34,51 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // The auth stub's tokens carry roles as a plain "roles" claim
-        // (["MISSION_OPERATOR"]) rather than Spring Security's default
-        // "scope"/"scp" claim shape - this converter is what teaches Spring
-        // Security to read OUR claim instead.
-        JwtGrantedAuthoritiesConverter authoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        JwtGrantedAuthoritiesConverter authoritiesConverter =
+                new JwtGrantedAuthoritiesConverter();
+
         authoritiesConverter.setAuthoritiesClaimName("roles");
         authoritiesConverter.setAuthorityPrefix("ROLE_");
 
-        JwtAuthenticationConverter authenticationConverter = new JwtAuthenticationConverter();
+        JwtAuthenticationConverter authenticationConverter =
+                new JwtAuthenticationConverter();
+
         authenticationConverter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> {})
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/public").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer((OAuth2ResourceServerConfigurer<HttpSecurity> oauth2) ->
-                        oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(authenticationConverter)));
+                        oauth2.jwt(jwt ->
+                                jwt.jwtAuthenticationConverter(authenticationConverter)));
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+        configuration.setAllowedMethods(List.of(
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE",
+                "PATCH",
+                "OPTIONS"
+        ));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
     }
 }

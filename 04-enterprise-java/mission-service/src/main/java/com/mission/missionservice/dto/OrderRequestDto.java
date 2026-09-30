@@ -1,5 +1,8 @@
 package com.mission.missionservice.dto;
 
+import com.mission.missionservice.enums.InstrumentType;
+import com.mission.missionservice.enums.Side;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -11,7 +14,7 @@ public record OrderRequestDto(
         String ticker,
 
         @NotNull(message = "instrumentType is required")
-        String instrumentType,
+        InstrumentType instrumentType,
 
         @Positive(message = "quantity must be positive")
         double quantity,
@@ -20,9 +23,9 @@ public record OrderRequestDto(
         double price,
 
         @NotNull(message = "side is required")
-        String side
+        Side side
 ) {
     public boolean isBuy() {
-        return "BUY".equalsIgnoreCase(side);
+        return "BUY".equalsIgnoreCase(side.toString());
     }
 }
