@@ -36,15 +36,12 @@ export class Holdings {
   }
 
   loadFromApi(url: string): void {
-    this.http
-      .get<Holding[]>(url)
-      .pipe(
-        catchError((error) => {
+    this.http.get<Holding[]>(url).pipe(
+      catchError((error) => {
           this.loadError.set(`Could not load holdings: ${error.message}`);
           return of(null);
         }),
-      )
-      .subscribe((data) => {
+      ).subscribe((data) => {
         if (data) {
           this.loadError.set(null);
           this.holdings.set(data);
