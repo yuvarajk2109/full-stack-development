@@ -2,6 +2,8 @@ package com.mission.missionservice.exception;
 
 import com.mission.missionservice.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -18,17 +20,31 @@ import java.util.NoSuchElementException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     // Module 6's honest gap, closed: instead of Spring's default
     // {"status":400,"error":"Bad Request",...} with no mention of WHAT was
     // wrong, every violated field and its message is listed explicitly.
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex,
-                                                          HttpServletRequest request) {
-        List<ErrorResponse.FieldError> fieldErrors = ex.getBindingResult().getFieldErrors().stream()
-                .map(fe -> new ErrorResponse.FieldError(fe.getField(), fe.getDefaultMessage()))
+    public ResponseEntity<ErrorResponse> handleValidation(
+            MethodArgumentNotValidException ex,
+            HttpServletRequest request) {
+
+        List<ErrorResponse.FieldError> fieldErrors = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(fe -> new ErrorResponse.FieldError(
+                        fe.getField(),
+                        fe.getDefaultMessage()))
                 .toList();
+
         ErrorResponse body = ErrorResponse.withFieldErrors(
-                400, "Bad Request", "request failed validation", request.getRequestURI(), fieldErrors);
+                400,
+                "Bad Request",
+                "request failed validation",
+                request.getRequestURI(),
+                fieldErrors);
+
         return ResponseEntity.badRequest().body(body);
     }
 
@@ -37,27 +53,55 @@ public class GlobalExceptionHandler {
     // type from two different layers - the repository and the controller -
     // now produces the exact same clean response shape.
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(NoSuchElementException ex, HttpServletRequest request) {
-        ErrorResponse body = ErrorResponse.of(404, "Not Found", ex.getMessage(), request.getRequestURI());
+    public ResponseEntity<ErrorResponse> handleNotFound(
+            NoSuchElementException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse body = ErrorResponse.of(
+                404,
+                "Not Found",
+                ex.getMessage(),
+                request.getRequestURI());
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 
     // A well-formed order, rejected by a BUSINESS rule - Module 6's 422
     // case, distinct from the 400 case above.
     @ExceptionHandler(OrderRejectedException.class)
-    public ResponseEntity<ErrorResponse> handleRejected(OrderRejectedException ex, HttpServletRequest request) {
-        ErrorResponse body = ErrorResponse.of(422, "Unprocessable Entity", ex.getMessage(), request.getRequestURI());
+    public ResponseEntity<ErrorResponse> handleRejected(
+            OrderRejectedException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse body = ErrorResponse.of(
+                422,
+                "Unprocessable Entity",
+                ex.getMessage(),
+                request.getRequestURI());
+
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(body);
     }
 
-    // The catch-all. Deliberately generic - never echo ex.getMessage() or a
-    // stack trace here. An unanticipated exception might carry internal
-    // detail (a SQL fragment, an internal class name) that has no business
-    // reaching a client. Full detail still goes to the server log.
+    // The catch-all. The client still receives a deliberately generic error,
+    // but the full exception is now logged on the server so unexpected
+    // failures can actually be diagnosed.
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleUnexpected(Exception ex, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> handleUnexpected(
+            Exception ex,
+            HttpServletRequest request) {
+
+        log.error(
+                "Unexpected exception handling {} {}",
+                request.getMethod(),
+                request.getRequestURI(),
+                ex);
+
         ErrorResponse body = ErrorResponse.of(
-                500, "Internal Server Error", "an unexpected error occurred", request.getRequestURI());
+                500,
+                "Internal Server Error",
+                "an unexpected error occurred",
+                request.getRequestURI());
+
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
     }
 }

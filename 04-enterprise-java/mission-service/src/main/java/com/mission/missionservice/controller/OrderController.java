@@ -6,6 +6,9 @@ import com.mission.missionservice.entity.HoldingRow;
 import com.mission.missionservice.entity.InstrumentRow;
 import com.mission.missionservice.exception.OrderRejectedException;
 import com.mission.missionservice.mapper.AccountMapper;
+
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.springframework.http.MediaType;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,6 +25,7 @@ import java.util.NoSuchElementException;
 //   Module 10 - Centralised error handling: every failure below throws, never returns an ad-hoc body
 // domain.* (OrderValidator, HoldingUpdater, InstrumentFactory, Feeable) is Sprint 5,
 // Module 13, completely unchanged - see shared/mission-brief.md.
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/accounts/{accountId}/orders")
 public class OrderController {
@@ -40,7 +44,7 @@ public class OrderController {
         this.accountMapper = accountMapper;
     }
 
-    @PostMapping
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OrderResponseDto> submitOrder(@PathVariable int accountId,
                                                         @Valid @RequestBody OrderRequestDto dto,
                                                         @AuthenticationPrincipal Jwt jwt) {

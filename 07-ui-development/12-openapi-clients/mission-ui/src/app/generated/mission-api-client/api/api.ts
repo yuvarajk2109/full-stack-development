@@ -1,0 +1,11 @@
+export * from './gameController.service';
+import { GameControllerService } from './gameController.service';
+export * from './helloController.service';
+import { HelloControllerService } from './helloController.service';
+export * from './missionController.service';
+import { MissionControllerService } from './missionController.service';
+export * from './orderController.service';
+import { OrderControllerService } from './orderController.service';
+export * from './portfolioController.service';
+import { PortfolioControllerService } from './portfolioController.service';
+export const APIS = [GameControllerService, HelloControllerService, MissionControllerService, OrderControllerService, PortfolioControllerService];
